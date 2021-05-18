@@ -1,9 +1,7 @@
 <?php
 namespace Trois\Clickup\Model\Endpoint;
 
-use Muffin\Webservice\Model\Endpoint;
-
-class SpaceEndpoint extends Endpoint
+class SpaceEndpoint extends ClickUpEndpoint
 {
   public function initialize(array $config)
   {

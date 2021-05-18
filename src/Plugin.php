@@ -13,10 +13,7 @@ class Plugin extends BasePlugin
   public function bootstrap(PluginApplicationInterface $app): void
   {
     parent::bootstrap($app);
-  }
 
-  public function routes(RouteBuilder $routes): void
-  {
-    parent::routes($routes);
+    $app->addPlugin(\Muffin\Webservice\Plugin::class);
   }
 }

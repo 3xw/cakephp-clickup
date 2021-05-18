@@ -10,6 +10,6 @@ class ClickUpCommand extends Command
 {
   public function execute(Arguments $args, ConsoleIo $io)
   {
-    $this->loadModel('Space', 'Endpoint');
+    $this->loadModel('Trois/Clickup.Space', 'Endpoint');
   }
 }
