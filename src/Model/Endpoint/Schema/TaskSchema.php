@@ -1,0 +1,24 @@
+<?php
+
+namespace Trois\Clickup\Model\Endpoint\Schema;
+
+use Muffin\Webservice\Model\Schema;
+
+class TaskSchema extends Schema
+{
+    /**
+     * {@inheritDoc}
+     */
+    public function initialize()
+    {
+        parent::initialize();
+
+        $this->addColumn('id', [
+            'type' => 'integer',
+            'primaryKey' => true
+        ]);
+        $this->addColumn('name', [
+            'type' => 'string',
+        ]);
+    }
+}
