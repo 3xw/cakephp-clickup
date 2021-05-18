@@ -82,7 +82,7 @@ class ClickUpWebservice extends Webservice
     /* @var Response $response */
     $response = $this->driver()->client()->get($url, $queryParameters);
     $results = $response->getJson();
-    if (!$response->isOk()) return false;
+    if (!$response->isOk()) throw new \Exception($response->getJson()['err']);
 
     // Turn results into resources
     $resources = $this->_transformResults($query->endpoint(), $results);
@@ -101,5 +101,15 @@ class ClickUpWebservice extends Webservice
     }
 
     return $resources;
+  }
+
+  protected function _executeCreateQuery(Query $query, array $options = [])
+  {
+    $url = $this->getBaseUrl();
+    $response = $this->driver()->client()->post($url, $query->set());
+
+    if (!$response->isOk()) throw new \Exception($response->getJson()['err']);
+
+    return $this->_transformResource($query->endpoint(), $response->getJson());
   }
 }
