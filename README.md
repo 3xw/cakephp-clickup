@@ -12,3 +12,26 @@ The recommended way to install composer packages is:
 Load it in your src/Application.php
 
 	$this->addPlugin(\Trois\Clickup\Plugin::class);
+
+## Configure
+in app.php
+
+```php
+'Datasources' => [
+	'click_up' => [
+		'className' => 'Muffin\Webservice\Connection',
+		'service' => 'Trois/Clickup.ClickUp',
+		'token' => 'pk_***'
+	],
+	//..
+]
+```
+
+## Use
+```php
+$this->loadModel('Trois/Clickup.Tasks', 'Endpoint');
+debug($this->Tasks->find()->where(['listId' => 'xxx'])->toArray());
+debug($this->Tasks->find()->where(['taskId' => 'xxx'])->toArray());
+
+```
+

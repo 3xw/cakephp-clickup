@@ -2,11 +2,15 @@
 
 namespace Trois\Clickup\Webservice;
 
-class SpaceWebservice extends ClickUpWebservice
+class SpacesWebservice extends ClickUpWebservice
 {
   public function initialize()
   {
     parent::initialize();
+
+    $this->addNestedResource('/api/v2/team/:teamId/space', [
+      'teamId',
+    ]);
 
     $this->addNestedResource('/api/v2/space/:spaceId', [
       'spaceId',

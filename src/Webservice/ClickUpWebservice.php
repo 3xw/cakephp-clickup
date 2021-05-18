@@ -82,11 +82,7 @@ class ClickUpWebservice extends Webservice
     /* @var Response $response */
     $response = $this->driver()->client()->get($url, $queryParameters);
     $results = $response->getJson();
-    if (!$response->isOk())
-    {
-      debug($results);
-      return false;
-    }
+    if (!$response->isOk()) return false;
 
     // Turn results into resources
     $resources = $this->_transformResults($query->endpoint(), $results);
@@ -96,13 +92,14 @@ class ClickUpWebservice extends Webservice
 
   protected function _transformResults(Endpoint $endpoint, array $results)
   {
-      $resources = [];
-      foreach ($results as $key =>$result)
-      {
-        if(!is_numeric($key)) return [$this->_transformResource($endpoint, $results)];
-        $resources[] = $this->_transformResource($endpoint, $result);
-      }
+    $resources = [];
+    if(!empty($results[$endpoint->getName()])) $results = $results[$endpoint->getName()];
+    foreach ($results as $key =>$result)
+    {
+      if(!is_numeric($key)) return [$this->_transformResource($endpoint, $results)];
+      $resources[] = $this->_transformResource($endpoint, $result);
+    }
 
-      return $resources;
+    return $resources;
   }
 }

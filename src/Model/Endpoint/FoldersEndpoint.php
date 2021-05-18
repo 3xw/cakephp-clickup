@@ -1,7 +1,7 @@
 <?php
 namespace Trois\Clickup\Model\Endpoint;
 
-class SpaceEndpoint extends ClickUpEndpoint
+class FoldersEndpoint extends ClickUpEndpoint
 {
   public function initialize(array $config)
   {
