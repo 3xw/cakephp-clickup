@@ -1,0 +1,24 @@
+{
+  "name": "3xw/cakephp-clickup",
+  "description": "CakePHP pages plugins",
+  "type": "cakephp-plugin",
+  "require": {
+    "php": ">=7.1",
+    "cakephp/cakephp": "^3.6",
+    "muffin/webservice": "dev-master"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Trois\\Clickup\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Trois\\Clickup\\Test\\": "tests",
+      "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+    }
+  }
+}
