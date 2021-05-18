@@ -9,6 +9,6 @@ class SpaceEndpoint extends ClickUpEndpoint
     $this->primaryKey('id');
     $this->displayField('name');
     //$this->setWebservice('Space', new \App\Webservice\ClickUp\SpaceWebservice);
-    debug($this->getWebservice());
+    //debug($this->getWebservice());
   }
 }

@@ -81,92 +81,28 @@ class ClickUpWebservice extends Webservice
 
     /* @var Response $response */
     $response = $this->driver()->client()->get($url, $queryParameters);
-    if (!$response->isOk()) {
+    $results = $response->getJson();
+    if (!$response->isOk())
+    {
+      debug($results);
       return false;
-    }
-
-    /* @var int $resourceAmount Total amount of resources */
-    $resourceAmount = false;
-
-    // Parse the Link header containing pagination info
-    $links = $this->_parseLinks($response->header('Link'));
-    if (isset($links['last'])) {
-      $linkParameters = $this->_linkQueryParameters($links['last']);
-
-      // Grab the last page number out of the Link header
-      if ((isset($linkParameters['page'])) && (isset($linkParameters['per_page']))) {
-        $resourceAmount = $linkParameters['page'] * $linkParameters['per_page'];
-      }
-    }
-
-    $results = false;
-    if ($search) {
-      $results = $response->json['items'];
-
-      $resourceAmount = $response->json['total_count'];
-    }
-    if ($results === false) {
-      $results = $response->json;
     }
 
     // Turn results into resources
     $resources = $this->_transformResults($query->endpoint(), $results);
 
-    return new ResultSet($resources, $resourceAmount);
+    return new ResultSet($resources, count($resources));
   }
 
-  /**
-  * {@inheritDoc}
-  */
-  protected function _transformResource(Endpoint $endpoint, array $result)
+  protected function _transformResults(Endpoint $endpoint, array $results)
   {
-    $properties = [];
-
-    foreach ($result as $property => $value) {
-      if ((substr($property, -4) === '_url') && ($property !== 'html_url')) {
-        continue;
+      $resources = [];
+      foreach ($results as $key =>$result)
+      {
+        if(!is_numeric($key)) return [$this->_transformResource($endpoint, $results)];
+        $resources[] = $this->_transformResource($endpoint, $result);
       }
 
-      // If this is a relation turn it into a resource as well
-      if ((is_array($value)) && (isset($value['id']))) {
-        $value = $this->_transformResource($endpoint, $value);
-      }
-
-      $properties[$property] = $value;
-    }
-
-    return $this->_createResource($endpoint->resourceClass(), $properties);
-  }
-
-  /**
-  * Parse Link headers from response.
-  *
-  * @param array|null $links List of Link headers
-  * @return array
-  */
-  protected function _parseLinks($links)
-  {
-    $links = array_map(function ($value) {
-      $matches = [];
-      preg_match('/\<(?P<link>.*)\>\; rel\=\"(?P<rel>.*)\"/', $value, $matches);
-
-      return $matches;
-    }, explode(', ', $links));
-
-    return Hash::combine($links, '{n}.rel', '{n}.link');
-  }
-
-  /**
-  * Returns the query parameters from a link in the Link header
-  *
-  * @param string $link The link to extract
-  * @return array List of parameters
-  */
-  protected function _linkQueryParameters($link)
-  {
-    $parameters = [];
-    parse_str(parse_url($link, PHP_URL_QUERY), $parameters);
-
-    return $parameters;
+      return $resources;
   }
 }
