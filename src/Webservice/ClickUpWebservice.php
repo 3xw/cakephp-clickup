@@ -109,14 +109,30 @@ class ClickUpWebservice extends Webservice
 
   protected function _executeCreateQuery(Query $query, array $options = [])
   {
-    debug($options);
-    die();
+    $this->_write($query, $options);
+  }
+
+  protected function _executeUpdateQuery(Query $query, array $options = [])
+  {
+    $this->_write($query, $options);
+  }
+
+  protected function _write(Query $query, array $options = [])
+  {
     $url = $this->getBaseUrl();
-    if ($nestedResource = $this->nestedResource($options)) $url = $nestedResource;
+    if (
+    $query->getOptions() &&
+    !empty($query->getOptions()['nested']) &&
+    $nestedResource = $this->nestedResource($query->getOptions()['nested'])
+    ) $url = $nestedResource;
 
-    debug($url);
-
-    $response = $this->driver()->client()->post($url, $query->set());
+    switch ($query->action())
+    {
+      case Query::ACTION_CREATE:
+      $response = $this->driver()->client()->post($url, $query->set());
+      case Query::ACTION_UPDATE:
+      $response = $this->driver()->client()->put($url, $query->set());
+    }
 
     if (!$response->isOk())
     {
@@ -126,4 +142,5 @@ class ClickUpWebservice extends Webservice
 
     return $this->_transformResource($query->endpoint(), $response->getJson());
   }
+
 }
