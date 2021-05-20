@@ -9,4 +9,9 @@ class ClickUpEndpoint extends Endpoint
   {
     return 'click_up';
   }
+
+  public function create(EntityInterface $resource, $options = [])
+  {
+    //toDo
+  }
 }

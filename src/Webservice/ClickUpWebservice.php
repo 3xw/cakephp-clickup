@@ -109,6 +109,8 @@ class ClickUpWebservice extends Webservice
 
   protected function _executeCreateQuery(Query $query, array $options = [])
   {
+    debug($options);
+    die();
     $url = $this->getBaseUrl();
     if ($nestedResource = $this->nestedResource($options)) $url = $nestedResource;
 
