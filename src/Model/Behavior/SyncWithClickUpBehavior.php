@@ -51,7 +51,7 @@ class SyncWithClickUpBehavior extends Behavior
   {
     if(empty($options['EnableClickUpSync'])) return;
 
-    $this->saveOrUpadteES($entity);
+    //$this->saveOrUpadteES($entity);
   }
 
   public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options)
