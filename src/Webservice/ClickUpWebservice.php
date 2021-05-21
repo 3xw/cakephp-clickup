@@ -67,7 +67,7 @@ class ClickUpWebservice extends Webservice
       // If this is the case turn search of
       $search = false;
     }
-    
+
     if ($search) {
       $url = '/search' . $url;
 
@@ -129,11 +129,11 @@ class ClickUpWebservice extends Webservice
     switch ($query->action())
     {
       case Query::ACTION_CREATE:
-      $response = $this->driver()->client()->post($url, $query->set());
+      $response = $this->driver()->client()->post($url, json_encode($query->set()));
       break;
 
       case Query::ACTION_UPDATE:
-      $response = $this->driver()->client()->put($url, $query->set());
+      $response = $this->driver()->client()->put($url, json_encode($query->set()));
       break;
 
       case Query::ACTION_DELETE:

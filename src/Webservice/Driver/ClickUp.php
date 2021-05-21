@@ -17,7 +17,10 @@ class ClickUp extends AbstractDriver
     $this->client(new Client([
       'host' => 'api.clickup.com',
       'scheme' => 'https',
-      'headers' => ['Authorization' => $this->getConfig('token')]
+      'headers' => [
+        'Authorization' => $this->getConfig('token'),
+        'Content-Type' => 'application/json'
+      ]
     ]));
   }
 }
