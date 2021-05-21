@@ -21,7 +21,8 @@ class ClickUpEndpoint extends Endpoint
     if ($event->isStopped()) return $event->result;
 
     // set data
-    $data = $resource->toArray(); // differs from original
+    //$data = $resource->toArray(); // differs from original
+    $data = $resource->extract($this->getSchema()->columns(), true);
 
     if($resource->isNew()) $query = $this->query()->create();
     else $query = $query = $this->query()->update();

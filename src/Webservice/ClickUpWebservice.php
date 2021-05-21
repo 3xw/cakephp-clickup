@@ -67,7 +67,7 @@ class ClickUpWebservice extends Webservice
       // If this is the case turn search of
       $search = false;
     }
-
+    
     if ($search) {
       $url = '/search' . $url;
 
