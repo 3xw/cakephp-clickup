@@ -36,6 +36,7 @@ class SyncWithClickUpBehavior extends Behavior
 
   public function afterSave(Event $event, EntityInterface $entity, ArrayObject $options)
   {
+
     if(empty($options['EnableClickUpSync'])) return;
     if(empty($options['nested'])) throw new \Exception('Need nested options to create records on ClickUp');
 
@@ -45,7 +46,7 @@ class SyncWithClickUpBehavior extends Behavior
     // check if one exists
     if(
       !$entity->isNew() &&
-      $clickupId = $this->getClickupId($entity)
+      $clickupId = $this->getClickupId($entity, $options['nested'])
     ){
       if(
         $resourceExists = $this->getEndpoint()->find()
@@ -90,14 +91,43 @@ class SyncWithClickUpBehavior extends Behavior
   }
 
   /* UTILS */
-  public function getClickupId(EntityInterface $entity)
+  public function getClickupId(EntityInterface $entity, $nested = null)
   {
     // get
-    if(!$joinEntity = $this->getJoinEntity($entity)) return false;
+    if(!$joinEntity = $this->getJoinEntity($entity))
+    {
+      if(!$nested) return false;
+      if(!$joinEntity = $this->lookupOnClickUpAndCreate($entity, $nested)) return false;
+    }
 
     // return ID
     $join = (object) $this->getConfig('joinTable');
     return $joinEntity->get($join->clickupKey);
+  }
+
+  public function lookupOnClickUpAndCreate(EntityInterface $entity, $nested)
+  {
+    $items = $this->getEndpoint()->find()->where($nested)->toArray();
+    $entityId4Digi = sprintf('%04d', $entity->number);
+
+    foreach ($items as $itm)
+    {
+      $parts = explode(" ", trim($itm->name));
+      if($entityId4Digi == sprintf('%04d',end($parts)))
+      {
+        if(
+          !$joinEntity = $this->getJoinTable()->save($this->getJoinTable()->newEntity([
+            'model' => $this->getTable()->alias(),
+            'foreign_id' => $entity->id,
+            'clickup_id' => $itm->id
+          ]))
+        ) throw new \Exception("Error Processing Request", 1);
+
+        return $joinEntity;
+      }
+    }
+
+    return false;
   }
 
   public function getEndpoint($endpoint = null)
@@ -117,8 +147,8 @@ class SyncWithClickUpBehavior extends Behavior
   protected function getJoinTable()
   {
     $mn = $this->getConfig('joinTable.modelName');
-    if(!property_exists($this, $mn)) return $this->loadModel($mn);
-    else $this->{$mn};
+    if(property_exists($this, $mn)) return $this->{$mn};
+    else return $this->loadModel($mn);
   }
 
   protected function getJoinEntity(EntityInterface $entity)
