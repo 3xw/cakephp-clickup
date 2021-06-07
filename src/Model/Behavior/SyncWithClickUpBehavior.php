@@ -7,6 +7,7 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\Behavior;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
+use Trois\Clickup\Utility\ModelLoader;
 
 class SyncWithClickUpBehavior extends Behavior
 {
@@ -25,7 +26,12 @@ class SyncWithClickUpBehavior extends Behavior
     'delete' => false
   ];
 
-  public function patchResource($resource, EntityInterface $entity, ArrayObject $options)
+  protected function loadModel($modelClass = null, $modelType = null)
+  {
+    return (new ModelLoader)->loadModel($modelClass, $modelType);
+  }
+
+  protected function patchResource($resource, EntityInterface $entity, ArrayObject $options)
   {
     $data = [];
     foreach($this->getConfig('staticMatching') as $field => $value) $data[$filed] = $value;
@@ -38,7 +44,7 @@ class SyncWithClickUpBehavior extends Behavior
   {
 
     if(empty($options['EnableClickUpSync'])) return;
-    if(empty($options['nested'])) throw new \Exception('Need nested options to create records on ClickUp');
+    if(empty($options['EnableClickUpSync']['nested'])) throw new \Exception('Need nested options to create records on ClickUp');
 
     // create empty
     $resource =  $this->getEndpoint()->newEntity();
@@ -46,7 +52,7 @@ class SyncWithClickUpBehavior extends Behavior
     // check if one exists
     if(
       !$entity->isNew() &&
-      $clickupId = $this->getClickupId($entity, $options['nested'])
+      $clickupId = $this->getClickupId($entity, $options['EnableClickUpSync']['nested'])
     ){
       if(
         $resourceExists = $this->getEndpoint()->find()
@@ -57,7 +63,7 @@ class SyncWithClickUpBehavior extends Behavior
 
     // warm
     $resource = $this->patchResource($resource, $entity, $options);
-    $nested = $this->getNestedOptionsForResource($resource, $options['nested']);
+    $nested = $this->getNestedOptionsForResource($resource, $options['EnableClickUpSync']['nested']);
 
     // save
     if(!$resource = $this->getEndpoint()->save($resource, ['nested' => $nested])) return;
@@ -79,8 +85,8 @@ class SyncWithClickUpBehavior extends Behavior
   public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options)
   {
     // check
-    if(empty($options['EnableClickUpSync'])) return;
     if(!$this->getConfig('delete')) return;
+    if(empty($options['EnableClickUpSync'])) return;
 
     // related
     if(!$clickupId = $this->getClickupId($entity)) return;
@@ -130,7 +136,7 @@ class SyncWithClickUpBehavior extends Behavior
     return false;
   }
 
-  public function getEndpoint($endpoint = null)
+  protected function getEndpoint($endpoint = null)
   {
     if(!$endpoint) $endpoint = $this->getConfig('endpoint');
     if(property_exists($this, $endpoint)) return $this->{$endpoint};
