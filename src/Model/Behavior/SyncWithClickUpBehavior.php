@@ -47,6 +47,7 @@ class SyncWithClickUpBehavior extends Behavior
     if(empty($options['EnableClickUpSync']['nested'])) throw new \Exception('Need nested options to create records on ClickUp');
 
     // create empty
+    $clickupId = false;
     $resource =  $this->getEndpoint()->newEntity();
 
     // check if one exists
