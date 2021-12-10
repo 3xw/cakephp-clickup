@@ -12,7 +12,7 @@ class ClickUp extends AbstractDriver
   /**
   * {@inheritDoc}
   */
-  public function initialize()
+  public function initialize(): void
   {
     $this->setClient(new Client([
       'host' => 'api.clickup.com',
