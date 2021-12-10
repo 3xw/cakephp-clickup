@@ -2,8 +2,8 @@
 
 namespace Trois\Clickup\Webservice\Driver;
 
-use Cake\Network\Http\Client;
-use Muffin\Webservice\AbstractDriver;
+use Cake\Http\Client;
+use Muffin\Webservice\Webservice\Driver\AbstractDriver;
 
 
 class ClickUp extends AbstractDriver
@@ -14,7 +14,7 @@ class ClickUp extends AbstractDriver
   */
   public function initialize()
   {
-    $this->client(new Client([
+    $this->setClient(new Client([
       'host' => 'api.clickup.com',
       'scheme' => 'https',
       'headers' => [
