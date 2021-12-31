@@ -5,8 +5,8 @@ namespace Trois\Clickup\Webservice;
 use Cake\Network\Http\Response;
 use Cake\Utility\Hash;
 use Muffin\Webservice\Model\Endpoint;
-use Muffin\Webservice\Query;
-use Muffin\Webservice\ResultSet;
+use Muffin\Webservice\Datasource\Query;
+use Muffin\Webservice\Datasource\ResultSet;
 use Muffin\Webservice\Webservice\Webservice;
 
 /**
@@ -24,7 +24,7 @@ class ClickUpWebservice extends Webservice
   */
   public function getBaseUrl()
   {
-    return '/api/v2/' . $this->endpoint();
+    return '/api/v2/' . $this->getEndpoint();
   }
 
   /**
@@ -36,12 +36,12 @@ class ClickUpWebservice extends Webservice
 
     $queryParameters = [];
     // Page number has been set, add to query parameters
-    if ($query->page()) {
-      $queryParameters['page'] = $query->page();
+    if ($query->clause('page')) {
+      $queryParameters['page'] = $query->clause('page');
     }
     // Result limit has been set, add to query parameters
-    if ($query->limit()) {
-      $queryParameters['per_page'] = $query->limit();
+    if ($query->clause('limit')) {
+      $queryParameters['per_page'] = $query->clause('limit');
     }
 
     $search = false;
@@ -80,21 +80,22 @@ class ClickUpWebservice extends Webservice
     }
 
     /* @var Response $response */
-    $response = $this->driver()->client()->get($url, $queryParameters);
+    $response = $this->getDriver()->getClient()->get($url, $queryParameters);
     $results = $response->getJson();
     if (!$response->isOk())
     {
+      debug($response->getUrl());
       debug($response->getJson());
       throw new \Exception($response->getJson()['err']);
     }
 
     // Turn results into resources
-    $resources = $this->_transformResults($query->endpoint(), $results);
+    $resources = $this->_transformResults($query->getEndpoint(), $results);
 
     return new ResultSet($resources, count($resources));
   }
 
-  protected function _transformResults(Endpoint $endpoint, array $results)
+  protected function _transformResults(Endpoint $endpoint, array $results): array
   {
     $resources = [];
     if(!empty($results[$endpoint->getName()])) $results = $results[$endpoint->getName()];
@@ -129,15 +130,15 @@ class ClickUpWebservice extends Webservice
     switch ($query->action())
     {
       case Query::ACTION_CREATE:
-      $response = $this->driver()->client()->post($url, json_encode($query->set()));
+      $response = $this->getDriver()->getClient()->post($url, json_encode($query->set()));
       break;
 
       case Query::ACTION_UPDATE:
-      $response = $this->driver()->client()->put($url, json_encode($query->set()));
+      $response = $this->getDriver()->getClient()->put($url, json_encode($query->set()));
       break;
 
       case Query::ACTION_DELETE:
-      $response = $this->driver()->client()->delete($url);
+      $response = $this->getDriver()->getClient()->delete($url);
       break;
     }
 
@@ -148,7 +149,7 @@ class ClickUpWebservice extends Webservice
       throw new \Exception($response->getJson()['err']);
     }
 
-    return $this->_transformResource($query->endpoint(), $response->getJson());
+    return $this->_transformResource($query->getEndpoint(), $response->getJson());
   }
 
 }

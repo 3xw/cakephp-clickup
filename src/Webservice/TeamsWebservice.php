@@ -6,7 +6,7 @@ use Muffin\Webservice\Model\Endpoint;
 
 class TeamsWebservice extends ClickUpWebservice
 {
-  public function initialize()
+  public function initialize(): void
   {
     parent::initialize();
 
