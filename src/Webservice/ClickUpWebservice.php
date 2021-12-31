@@ -127,7 +127,7 @@ class ClickUpWebservice extends Webservice
     $nestedResource = $this->nestedResource($query->getOptions()['nested'])
     ) $url = $nestedResource;
 
-    switch ($query->action())
+    switch ($query->clause('action'))
     {
       case Query::ACTION_CREATE:
       $response = $this->getDriver()->getClient()->post($url, json_encode($query->set()));
