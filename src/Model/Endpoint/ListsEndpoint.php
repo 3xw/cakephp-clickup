@@ -3,11 +3,11 @@ namespace Trois\Clickup\Model\Endpoint;
 
 class ListsEndpoint extends ClickUpEndpoint
 {
-  public function initialize(array $config)
+  public function initialize(array $config): void
   {
     parent::initialize($config);
-    $this->primaryKey('id');
-    $this->displayField('name');
+    $this->setPrimaryKey('id');
+    $this->setDisplayField('name');
     //$this->setWebservice('Space', new \App\Webservice\ClickUp\SpaceWebservice);
     //debug($this->getWebservice());
   }
