@@ -124,7 +124,7 @@ class SyncWithClickUpBehavior extends Behavior
       {
         if(
           !$joinEntity = $this->getJoinTable()->save($this->getJoinTable()->newEntity([
-            'model' => $this->getTable()->alias(),
+            'model' => $this->getTable()->getAlias(),
             'foreign_id' => $entity->id,
             'clickup_id' => $itm->id
           ]))
