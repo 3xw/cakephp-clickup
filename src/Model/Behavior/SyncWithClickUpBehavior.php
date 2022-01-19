@@ -116,6 +116,8 @@ class SyncWithClickUpBehavior extends Behavior
   {
     $items = $this->getEndpoint()->find()->where($nested)->toArray();
     $entityId4Digi = sprintf('%04d', $entity->number);
+    if($entityId4Digi == '0000') throw new \Exception("NUmber $entityId4Digi is not valid");
+
 
     foreach ($items as $itm)
     {
