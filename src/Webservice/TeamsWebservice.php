@@ -17,7 +17,7 @@ class TeamsWebservice extends ClickUpWebservice
     ]);
   }
 
-  protected function _transformResults(Endpoint $endpoint, array $results)
+  protected function _transformResults(Endpoint $endpoint, array $results): array
   {
     if(!empty($results['team'])) $results = $results['team'];
     return parent::_transformResults($endpoint, $results);

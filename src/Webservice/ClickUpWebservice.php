@@ -17,6 +17,8 @@ use Muffin\Webservice\Webservice\Webservice;
 class ClickUpWebservice extends Webservice
 {
 
+  protected $_queryFilters = ['id'];
+
   /**
   * Returns the base URL for this endpoint
   *
@@ -48,43 +50,19 @@ class ClickUpWebservice extends Webservice
     $searchParameters = [];
     if ($query->clause('where')) {
       foreach ($query->clause('where') as $field => $value) {
-        switch ($field) {
-          case 'id':
-          default:
-          // Add the condition as search parameter
-          $searchParameters[$field] = $value;
-
-          // Mark this query as a search
-          $search = true;
-        }
+        if(in_array($field, $this->_queryFilters)) $queryParameters[$field] = $value;// is_array($value)? implode(",", $value): $value;
       }
     }
 
     // Check if this query could be requested using a nested resource.
-    if ($nestedResource = $this->nestedResource($query->clause('where'))) {
-      $url = $nestedResource;
-
-      // If this is the case turn search of
-      $search = false;
-    }
-
-    if ($search) {
-      $url = '/search' . $url;
-
-      $q = [];
-      foreach ($searchParameters as $parameter => $value) {
-        $q[] = $parameter . ':' . $value;
-      }
-
-      $queryParameters['q'] = implode(' ', $q);
-    }
+    if ($nestedResource = $this->nestedResource($query->clause('where'))) $url = $nestedResource;
 
     /* @var Response $response */
     $response = $this->getDriver()->getClient()->get($url, $queryParameters);
     $results = $response->getJson();
     if (!$response->isOk())
     {
-      debug($response->getUrl());
+      debug($url);
       debug($response->getJson());
       throw new \Exception($response->getJson()['err']);
     }
