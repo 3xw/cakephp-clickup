@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Trois\Clickup\Utility;
 use \Cake\Datasource\ModelAwareTrait;
 
